@@ -1,6 +1,24 @@
-# Gas Profiler PoC
+# Gas Profiler Remix-Plugin
 
-### Gas Estimates
+### Install
+
+> git clone git@github.com:EdsonAlcala/remix-gas-profiler.git
+
+> npm install 
+
+### Commands
+
+> npm start
+
+> npm test
+
+#### Notes
+
+Input? txhash: 0x8a41f3dfc9b5a9469ff0bcaca825df4f8dd22789d0d4a4ad78917d46adf8328e
+
+Gas Estimates
+
+```javascript
 {
 	"Creation": {
 		"codeDepositCost": "28200",
@@ -12,7 +30,4 @@
 		"state()": "398"
 	}
 }
-
-#### Notes
-
-Input? txhash: 0x8a41f3dfc9b5a9469ff0bcaca825df4f8dd22789d0d4a4ad78917d46adf8328e
+```
