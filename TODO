@@ -1,7 +1,0 @@
-think in creating it as a package (cli like)
--> npm install -g remix-gas-profiler
--> remix-gas-profiler-cli
--> Done
-
-Add instructions
-get contract source code
