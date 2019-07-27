@@ -55,6 +55,15 @@ jobs:
       - store_artifacts:
           path: reports/junit
 
+  npm-audit: 
+    docker: *nodejs-docker-image
+    steps:
+      - checkout
+      - *restore_cache
+      - run:
+          name: NPM Audit
+          command: npm audit
+
   bundle: 
     docker: *nodejs-docker-image
     steps:
@@ -75,7 +84,11 @@ workflows:
       - unit-tests:
           requires:
             - setup
+      - npm-audit:
+          requires:
+            - setup
       - bundle:
           requires:
             - tslint-and-format
             - unit-tests
+            - npm-audit

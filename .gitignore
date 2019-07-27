@@ -4,3 +4,4 @@ dist
 examples/plugins/*/dist
 coverage
 geth-runner
+junit.xml
