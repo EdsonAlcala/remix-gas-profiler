@@ -26,7 +26,7 @@ const getLineFromPos = require('get-line-from-pos');
 // }
 
 export const buildLineOffsets = (src: string) => {
-    var accu = 0;
+    let accu = 0;
     return src.split('\n').map(line => {
         const ret = accu;
         accu += line.length + 1;

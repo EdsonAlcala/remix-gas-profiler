@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import { buildPcToInstructionMapping, parseSourceMap, parseRuntimeBinary, parsedLast } from "../src/utils"
+import { buildPcToInstructionMapping, parsedLast, parseRuntimeBinary, parseSourceMap } from "../src/utils"
 
 const SOURCEMAP_FILE = "./test/mock-data/source-maps.json"; // TODO Change this
 // TODO: Fix path

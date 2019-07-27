@@ -1,4 +1,4 @@
-import { createIframeClient, CompilationFileSources, CompilationResult, RemixTx, PluginApi, PluginClient, IRemixApi, Api } from '@remixproject/plugin'
+import { Api, CompilationFileSources, CompilationResult, createIframeClient, IRemixApi, PluginApi, PluginClient, RemixTx } from '@remixproject/plugin'
 
 const devMode = { port: 8080 }
 
@@ -10,7 +10,7 @@ export class Profiler {
         this.client = createIframeClient({ devMode })
     }
 
-    async init() {
+    public async init() {
         await this.client.onload()
 
         this.client.solidity.on('compilationFinished', (file: string, src: CompilationFileSources, version: string, result: CompilationResult) => {

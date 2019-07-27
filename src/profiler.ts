@@ -1,6 +1,6 @@
 // import Web3 from "web3"
 
-import { parseSourceMap, buildPcToInstructionMapping, buildLineOffsets } from './utils';
+import { buildLineOffsets, buildPcToInstructionMapping, parseSourceMap } from './utils';
 
 const binarysearch = require('binarysearch');
 
@@ -20,7 +20,7 @@ export const profiler = async (sourceMap: string, originalSourceCode: string, tr
         console.log("contractAddress", contractAddress)
 
         const sourceMapParsed = parseSourceMap(sourceMap);
-        const code = "0x6080604052348015600f57600080fd5b506103e86000556096806100246000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80631865c57d146037578063c19d93fb14604f575b600080fd5b603d6055565b60408051918252519081900360200190f35b603d605b565b60005490565b6000548156fea265627a7a723058209fa44d2c74885e60715e4d845d6f360f80cbef23b84d3804408903f946b90bbf64736f6c634300050a0032"//await web3.eth.getCode(contractAddress);
+        const code = "0x6080604052348015600f57600080fd5b506103e86000556096806100246000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80631865c57d146037578063c19d93fb14604f575b600080fd5b603d6055565b60408051918252519081900360200190f35b603d605b565b60005490565b6000548156fea265627a7a723058209fa44d2c74885e60715e4d845d6f360f80cbef23b84d3804408903f946b90bbf64736f6c634300050a0032"// await web3.eth.getCode(contractAddress);
         console.log("Code", code)
 
         const pcToIdx = buildPcToInstructionMapping(code);
