@@ -1,5 +1,3 @@
-setup coveralls
-add coveralls badge
 think in creating it as a package (cli like)
 -> npm install -g remix-gas-profiler
 -> remix-gas-profiler-cli
