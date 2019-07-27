@@ -7,8 +7,9 @@
     "bundle": "webpack",
     "start": "webpack-dev-server",
     "test": "jest",
-    "lint": "tslint -p . -c tslint.json",
-    "lint:fix": "tslint --fix -p . -c tslint.json",
+    "test:ci": "",
+    "tslint": "tslint -p . -c tslint.json",
+    "tslint:fix": "tslint --fix -p . -c tslint.json",
     "prettier": "prettier --write 'src/**/*.{ts,js,json}'",
     "check-formatting": "prettier --list-different 'src/**/*.{ts,ts,js,json}'"
   },

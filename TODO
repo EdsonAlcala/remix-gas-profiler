@@ -1,11 +1,9 @@
-setup prettier
-setup lint
-add gitlab file
-Create gitlab mirror repository
-Publish Generator
-Create Generator
+Create circle-ci project
+add circle-ci badge
+think in creating it as a package (cli like)
+-> npm install -g remix-gas-profiler
+-> remix-gas-profiler-cli
+-> Done
+
 Add instructions
 get contract source code
-
-
-
