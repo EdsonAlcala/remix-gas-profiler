@@ -1,4 +1,4 @@
-import Web3 from "web3"
+// import Web3 from "web3"
 
 import { parseSourceMap, buildPcToInstructionMapping, buildLineOffsets } from './utils';
 
@@ -12,8 +12,8 @@ interface SourceMap {
 
 export const profiler = async (sourceMap: string, originalSourceCode: string, trace: any, providerURL: string, contractAddress: string) => {
     try {
-        const provider = new Web3.providers.HttpProvider(providerURL);
-        const web3 = new Web3(provider);
+        // const provider = new Web3.providers.HttpProvider(providerURL);
+        // const web3 = new Web3(provider);
 
         console.log("sourceMap", sourceMap)
         console.log("providerURL", providerURL)
