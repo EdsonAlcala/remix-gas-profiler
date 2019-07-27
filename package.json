@@ -7,7 +7,7 @@
     "bundle": "webpack",
     "start": "webpack-dev-server",
     "test": "jest",
-    "test:ci": "jest --runInBand --detectOpenHandles --ci",
+    "test:ci": "jest --runInBand --detectOpenHandles --ci --reporters=default --reporters=jest-junit --coverage --coverageReporters=text-lcov | coveralls",
     "tslint": "tslint -p . -c tslint.json",
     "tslint:fix": "tslint --fix -p . -c tslint.json",
     "prettier": "prettier --write 'src/**/*.{ts,js,json}'",
@@ -17,6 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^24.0.15",
+    "coveralls": "^3.0.5",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",
     "jest-junit": "^7.0.0",
