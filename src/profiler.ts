@@ -1,35 +1,20 @@
-// import Web3 from "web3"
 
 import { buildLineOffsets, buildPcToInstructionMapping, parseSourceMap } from './utils'
 
 const binarysearch = require('binarysearch') // tslint:disable-line
 
-// const TX_HASH = '0x8a41f3dfc9b5a9469ff0bcaca825df4f8dd22789d0d4a4ad78917d46adf8328e' // TODO
-
 interface ISourceMap {
   [key: number]: any
 }
 
-export const profiler = async (
-  sourceMap: string,
-  bytecode: string,
-  originalSourceCode: string,
-  trace: any,
-  // providerURL: string,
-  // contractAddress: string,
-) => {
+export const profiler = async (sourceMap: string, bytecode: string, originalSourceCode: string, trace: any) => {
   try {
-    // const provider = new Web3.providers.HttpProvider(providerURL);
-    // const web3 = new Web3(provider);
-
     console.log('sourceMap', sourceMap)
-    // console.log('providerURL', providerURL)
-    // console.log('contractAddress', contractAddress)
+    console.log('bytecode', bytecode)
+    console.log('originalSourceCode', originalSourceCode)
 
     const sourceMapParsed = parseSourceMap(sourceMap)
-    // const code =
-    //   '0x6080604052348015600f57600080fd5b506103e86000556096806100246000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80631865c57d146037578063c19d93fb14604f575b600080fd5b603d6055565b60408051918252519081900360200190f35b603d605b565b60005490565b6000548156fea265627a7a723058209fa44d2c74885e60715e4d845d6f360f80cbef23b84d3804408903f946b90bbf64736f6c634300050a0032' // await web3.eth.getCode(contractAddress);
-    // console.log('Code', code)
+    console.log('sourceMapParsed', sourceMapParsed)
 
     const pcToIdx = buildPcToInstructionMapping(bytecode)
     console.log('pcToIdx', pcToIdx)
@@ -85,7 +70,7 @@ export const profiler = async (
         lineGas[line] += cost
       }
       console.log('line', line)
-    } // for
+    }
 
     originalSourceCode.split('\n').forEach((line, i) => {
       const gas = lineGas[i] || 0
@@ -97,5 +82,3 @@ export const profiler = async (
     console.log('ERROR', error)
   }
 }
-
-// Also make the conversion to solcoverage.json

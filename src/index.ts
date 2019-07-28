@@ -1,6 +1,7 @@
+import Web3 from "web3"
+
 import {
   Api,
-  CompilationFileSources,
   CompilationResult,
   createIframeClient,
   IRemixApi,
@@ -34,7 +35,13 @@ export class GasProfilerPlugin {
         const { hash } = tx as any
         console.log('Transaction hash', hash)
 
-        const traces = await this.client.call('debugger' as any, 'getTrace', hash)
+        const provider1 = await this.client.network.getNetworkProvider()
+        console.log("Provider1", provider1)
+
+        const provider = await this.client.call('network', 'getNetworkProvider')
+        console.log("Provider", provider)
+
+        const traces = await this.getTracesViaWeb3(hash);//provider === 'vm' ? await this.client.call('debugger' as any, 'getTrace', hash) : await this.getTracesViaWeb3(hash);
         console.log('Traces ', traces)
 
         const compilationResult: CompilationResult = await this.client.solidity.getCompilationResult()
@@ -55,13 +62,32 @@ export class GasProfilerPlugin {
         const bytecode = (compilationResult as any).data.contracts[target][name].evm.bytecode.object
         console.log('bytecode', bytecode)
 
-        const result = await profiler(sourceMap, bytecode, originalSourceCode, traces);
+        // const result = await profiler(sourceMap, bytecode, originalSourceCode, traces);
 
-        console.log(`The result is ${JSON.stringify(result)}`)
+        // console.log(`The result is ${JSON.stringify(result)}`)
       } catch (error) {
         console.log("Error in newTransaction event handler", error.message)
       }
     })
+  }
+
+  public async getTracesViaWeb3(transactionHash: string) {
+    const providerURL = await this.client.network.getEndpoint()
+    console.log('providerURL', providerURL)
+    const provider = new Web3.providers.HttpProvider(providerURL);
+    const web3 = new Web3(provider);
+    web3.extend({
+      methods: [
+        {
+          name: 'traceTx',
+          call: 'debug_traceTransaction',
+          params: 2
+        }
+      ]
+    });
+    const traces = await web3.traceTx(transactionHash, { disableStack: true, disableMemory: true, disableStorage: true });
+    console.log('Traces via web3', traces)
+    return traces;
   }
 }
 
