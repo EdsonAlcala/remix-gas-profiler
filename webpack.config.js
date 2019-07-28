@@ -13,6 +13,9 @@ module.exports = {
             { test: /\.ts$/, use: 'ts-loader' }
         ]
     },
+    resolve: {
+        extensions: ['.ts', '.js', '.json']
+    },
     devServer: {
         contentBase: './dist',
         port: 8080

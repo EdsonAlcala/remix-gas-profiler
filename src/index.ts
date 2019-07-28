@@ -9,9 +9,12 @@ import {
   RemixTx,
 } from '@remixproject/plugin'
 
+
+import { profiler } from "./profiler"
+
 const devMode = { port: 8080 }
 
-export class Profiler {
+export class GasProfilerPlugin {
   private readonly client: PluginApi<Readonly<IRemixApi>> &
     PluginClient<Api, Readonly<IRemixApi>>
 
@@ -22,54 +25,50 @@ export class Profiler {
   public async init() {
     await this.client.onload()
 
-    this.client.solidity.on(
-      'compilationFinished',
-      (
-        file: string,
-        src: CompilationFileSources,
-        version: string,
-        result: CompilationResult,
-      ) => {
-        console.log('Compilation Finished')
-      },
-    )
-
     this.client.on('udapp', 'newTransaction', async (tx: RemixTx) => {
-      // TODO: RemixTx type wrong
-      // TODO report that it is debugger instead of debug
-      console.log('A new transaction was sent')
-      // then I need to make a call to get trace
-      // test if I can get the compilation results
-      const result = await this.client.solidity.getCompilationResult()
-      console.log('Compilation Result!!', result)
-      console.log('Tx', tx)
-      const { hash } = tx as any
-      console.log('hash ', hash)
-      const resultado = await this.client.call('debugger' as any, 'getTrace', hash)
-      console.log('Resultado ', resultado)
+
+      try {
+        console.log('A new transaction was sent')
+        console.log('Transaction', tx)
+
+        const { hash } = tx as any
+        console.log('Transaction hash', hash)
+
+        const traces = await this.client.call('debugger' as any, 'getTrace', hash)
+        console.log('Traces ', traces)
+
+        const compilationResult: CompilationResult = await this.client.solidity.getCompilationResult()
+        console.log('Compilation Result', compilationResult)
+
+        const target = (compilationResult as any).source.target
+        console.log('target', target)
+
+        const originalSourceCode = (compilationResult as any).source.sources[target].content
+        console.log('originalSourceCode', originalSourceCode)
+
+        const name = target.replace('browser/', '').replace('.sol', '').trim()
+        console.log('name', name)
+
+        const sourceMap = (compilationResult as any).data.contracts[target][name].evm.bytecode.sourceMap
+        console.log('sourceMap', sourceMap)
+
+        const bytecode = (compilationResult as any).data.contracts[target][name].evm.bytecode.object
+        console.log('bytecode', bytecode)
+
+        const result = await profiler(sourceMap, bytecode, originalSourceCode, traces);
+
+        console.log(`The result is ${JSON.stringify(result)}`)
+      } catch (error) {
+        console.log("Error in newTransaction event handler", error.message)
+      }
     })
   }
 }
 
-new Profiler().init().then(() => {
+new GasProfilerPlugin().init().then(() => {
   console.log('Gas Profiler Plugin loaded!!')
 })
 
-// TODO:
 
-// BEING ABLE TO call debug getTrace
-// Then all should work with the ethereum evm js
 
-// Ask question about the supoort of debug in Remix-plugin
 
-// issue with
-
-// Uncaught (in promise) TypeError: this.pendingRequest[u] is not a function
-//     at t.<anonymous> (/build/app.js:3)
-//     at /build/app.js:3
-//     at Object.next (/build/app.js:3)
-//     at /build/app.js:3
-//     at new Promise (<anonymous>)
-//     at s (/build/app.js:3)
-//     at t.getMessage (/build/app.js:3)
-//     at n.listener (/build/app.js:3)

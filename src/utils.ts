@@ -89,14 +89,14 @@ export const parseRuntimeBinary = (binary: string) => {
   return byteToInstIndex(binary)
 }
 
-export const buildPcToInstructionMapping = (code0xHexStr: string) => {
+export const buildPcToInstructionMapping = (codeHexStr: string) => {
   const mapping: IMapping = {}
-  const codeHexStr = code0xHexStr.slice(2)
+  // const codeHexStr =  code0xHexStr.slice(2)
   let instructionIndex = 0
   console.log('codeHexStr.length', codeHexStr.length)
   console.log('codeHexStr', codeHexStr)
 
-  for (let pc = 0; pc < codeHexStr.length / 2; ) {
+  for (let pc = 0; pc < codeHexStr.length / 2;) {
     console.log('PC Counter', pc)
     mapping[pc] = instructionIndex
 

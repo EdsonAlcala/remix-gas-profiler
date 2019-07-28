@@ -14,6 +14,9 @@
 
 > npm test
 
+> npm run bundle 
+
 ### References
 
-<TODO>
+
+
