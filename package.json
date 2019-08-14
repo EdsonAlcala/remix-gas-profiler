@@ -38,8 +38,6 @@
     "ethereum-types": "^2.1.4",
     "ethereumjs-util": "^6.1.0",
     "get-line-from-pos": "^1.0.0",
-    "istanbul": "^0.4.5",
-    "lodash": "^4.17.15",
-    "web3": "^1.2.0"
+    "istanbul": "^0.4.5"
   }
 }
