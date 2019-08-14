@@ -12,7 +12,7 @@
     "tslint:fix": "tslint --fix -p . -c tslint.json",
     "prettier": "prettier --write 'src/**/*.{ts,js,json}'",
     "check-formatting": "prettier --list-different 'src/**/*.{ts,ts,js,json}'",
-    "publish": "surge --project ./dist --domain remix-gas-profiler.surge.sh"
+    "publish": "npm run bundle && surge --project ./dist --domain remix-gas-profiler.surge.sh"
   },
   "author": "Edson Alcalas",
   "license": "ISC",
