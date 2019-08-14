@@ -15,6 +15,7 @@ export class GasProfilerPlugin {
   }
 
   public async init() {
+    console.log("Pluging loaded but waiting for Remix")
     await this.client.onload()
 
     this.client.on('udapp', 'newTransaction', async (tx: RemixTx) => {
