@@ -16,6 +16,10 @@
 
 > npm run bundle 
 
+### Notes
+
+To activate debugger
+
 ### References
 
 

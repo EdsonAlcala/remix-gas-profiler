@@ -1,5 +1,9 @@
-
-import { buildLineOffsets, buildPcToInstructionMapping, parseSourceMap, normalizeStructLogs } from './utils'
+import {
+  buildLineOffsets,
+  buildPcToInstructionMapping,
+  normalizeStructLogs,
+  parseSourceMap,
+} from './utils'
 
 const binarysearch = require('binarysearch') // tslint:disable-line
 
@@ -8,8 +12,12 @@ interface ISourceMap {
 }
 
 export class Profiler {
-
-  async getGasPerLineCost(sourceMap: string, bytecode: string, originalSourceCode: string, trace: any) {
+  public async getGasPerLineCost(
+    sourceMap: string,
+    bytecode: string,
+    originalSourceCode: string,
+    trace: any,
+  ) {
     try {
       console.log('sourceMap', sourceMap)
       console.log('bytecode', bytecode)
@@ -29,7 +37,7 @@ export class Profiler {
       let synthCost = 0
 
       // console.log('trace', trace)
-      const structLogs = trace.result ? trace.result.structLogs : trace.structLogs;
+      const structLogs = trace.result ? trace.result.structLogs : trace.structLogs
       const normalisedStructLogs = normalizeStructLogs(structLogs)
       const bottomDepth = normalisedStructLogs[0].depth // should be 1
 
@@ -62,16 +70,16 @@ export class Profiler {
 
         const { s, l, f, j } = sourceMapParsed[instructionIdx]
         if (f === -1) {
-          synthCost += parseInt(cost)
+          synthCost += parseInt(cost, 10)
           continue
         }
         const line = binarysearch.closest(lineOffsets, s)
 
         console.log('lineGas === undefined', lineGas[line] === undefined)
         if (lineGas[line] === undefined) {
-          lineGas[line] = parseInt(cost)
+          lineGas[line] = parseInt(cost, 10)
         } else {
-          lineGas[line] += parseInt(cost)
+          lineGas[line] += parseInt(cost, 10)
         }
 
         console.log('lineGas[line]', lineGas[line])
@@ -86,14 +94,13 @@ export class Profiler {
         console.log('%s\t\t%s', gas, line, i)
         gasPerLineCost.push({
           lineNumber: i + 1,
-          gasCost: gas
+          gasCost: gas,
         })
       })
 
       console.log('synthetic instruction gas', synthCost)
 
-      return gasPerLineCost;
-
+      return gasPerLineCost
     } catch (error) {
       console.log('ERROR', error)
     }

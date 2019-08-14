@@ -1,5 +1,5 @@
 export enum constants {
-    NEW_CONTRACT = "NEW_CONTRACT"
+  NEW_CONTRACT = 'NEW_CONTRACT',
 }
 
 export const PUSH1 = 0x60

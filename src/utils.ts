@@ -1,4 +1,4 @@
-import { StructLog, OpCode } from "ethereum-types";
+import { OpCode, StructLog } from 'ethereum-types'
 
 export const buildLineOffsets = (src: string) => {
   let accu = 0
@@ -46,7 +46,7 @@ export const buildPcToInstructionMapping = (codeHexStr: string) => {
   console.log('codeHexStr.length', codeHexStr.length)
   console.log('codeHexStr', codeHexStr)
 
-  for (let pc = 0; pc < codeHexStr.length / 2;) {
+  for (let pc = 0; pc < codeHexStr.length / 2; ) {
     // console.log('PC Counter', pc)
     mapping[pc] = instructionIndex
 
@@ -75,16 +75,18 @@ export const normalizeStructLogs = (structLogs: StructLog[]): StructLog[] => {
     // Geth uses 1-indexed depth counter whilst ganache starts from 0
     const newStructLogs = structLogs.map(structLog => ({
       ...structLog,
-      depth: structLog.depth - 1
-    }));
-    return newStructLogs;
+      depth: structLog.depth - 1,
+    }))
+    return newStructLogs
   }
-  return structLogs;
+  return structLogs
 }
 
 // TODO: test
 export const isCallLike = (op: OpCode): boolean => {
-  return [OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall].includes(op)
+  return [OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall].includes(
+    op,
+  )
   // return _.includes(
   //   ,
   //   op
@@ -99,7 +101,13 @@ export const isCallLike = (op: OpCode): boolean => {
 // }
 
 export const isEndOpcode = (op: OpCode): boolean => {
-  return [OpCode.Return, OpCode.Stop, OpCode.Revert, OpCode.Invalid, OpCode.SelfDestruct].includes(op)
+  return [
+    OpCode.Return,
+    OpCode.Stop,
+    OpCode.Revert,
+    OpCode.Invalid,
+    OpCode.SelfDestruct,
+  ].includes(op)
 }
 
 // https://solidity.readthedocs.io/en/develop/miscellaneous.html#source-mappings
@@ -144,4 +152,3 @@ export const parseSourceMap = (sourceMap: string) => {
       return { s: Number(s), l: Number(l), f: Number(f), j }
     })
 }
-
