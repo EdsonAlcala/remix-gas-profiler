@@ -80,7 +80,7 @@ export class GasProfilerPlugin {
     })
   }
 
-  render(originalSourceCode, gasPerLineCost) {
+  private render(originalSourceCode, gasPerLineCost) {
     let costsColumn = ''
     gasPerLineCost.forEach((item) => {
       const currentCell = item.gasCost > 0 ? `<span class='gas-amount'>${item.gasCost}</span>` : `<span class='empty'>0</span>`
@@ -101,7 +101,7 @@ export class GasProfilerPlugin {
     (window as any).PR.prettyPrint();
   }
 
-  public async getTracesViaWeb3(transactionHash: string) {
+  private async getTracesViaWeb3(transactionHash: string) {
     // TODO: Until remix issues are fixed I can test
     // const providerURL = await this.client.network.getEndpoint();
     // console.log('providerURL', providerURL)
