@@ -1,4 +1,9 @@
+import { StructLog, OpCode } from "ethereum-types";
+
 // const getLineFromPos = require('get-line-from-pos');
+import { addHexPrefix } from 'ethereumjs-util';
+import { padZeros } from "./address-utils";
+import { BigNumber } from 'bignumber.js';
 
 // export const showAllPointsInSourceMap = (sourceMap, src, lineOffsets) => {
 //     const linePoints = []; //line no -> number of points in source map
@@ -97,7 +102,7 @@ export const buildPcToInstructionMapping = (codeHexStr: string) => {
   console.log('codeHexStr', codeHexStr)
 
   for (let pc = 0; pc < codeHexStr.length / 2;) {
-    console.log('PC Counter', pc)
+    // console.log('PC Counter', pc)
     mapping[pc] = instructionIndex
 
     const byteHex = codeHexStr[pc * 2] + codeHexStr[pc * 2 + 1]
@@ -117,6 +122,40 @@ export const buildPcToInstructionMapping = (codeHexStr: string) => {
 
 export const parseAnotherSourceMap = (sourceMap: string) => {
   const items = sourceMap.trim().split(';')
+}
+
+// TODO: test
+export const normalizeStructLogs = (structLogs: StructLog[]): StructLog[] => {
+  if (structLogs[0].depth === 1) {
+    // Geth uses 1-indexed depth counter whilst ganache starts from 0
+    const newStructLogs = structLogs.map(structLog => ({
+      ...structLog,
+      depth: structLog.depth - 1
+    }));
+    return newStructLogs;
+  }
+  return structLogs;
+}
+
+// TODO: test
+export const isCallLike = (op: OpCode): boolean => {
+  return [OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall].includes(op)
+
+  // return _.includes(
+  //   ,
+  //   op
+  // );
+}
+
+export const getAddressFromStackEntry = (stackEntry: string): string => {
+  const hexBase = 16;
+  return padZeros(
+    new BigNumber(addHexPrefix(stackEntry)).toString(hexBase)
+  );
+}
+
+export const isEndOpcode = (op: OpCode): boolean => {
+  return [OpCode.Return, OpCode.Stop, OpCode.Revert, OpCode.Invalid, OpCode.SelfDestruct].includes(op)
 }
 
 const scan = (array: [], reducer: any, initialValue: []) => {
@@ -173,3 +212,4 @@ export const parseSourceMap = (sourceMap: string) => {
       return { s: Number(s), l: Number(l), f: Number(f), j }
     })
 }
+

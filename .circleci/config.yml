@@ -73,6 +73,15 @@ jobs:
           name: Bundle
           command: npm run bundle
 
+  publish: 
+    docker: *nodejs-docker-image
+    steps:
+      - checkout
+      - *restore_cache
+      - run:
+          name: Publish
+          command: surge --project ./dist --domain remix-gas-profiler.surge.sh
+
 workflows:
   version: 2
   build-deploy:
@@ -92,3 +101,6 @@ workflows:
             - tslint-and-format
             - unit-tests
             - npm-audit
+      - publish:
+          requires:
+            - bundle

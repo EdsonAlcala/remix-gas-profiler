@@ -6,14 +6,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Remix Gas Profiler</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" />
+    <style>
+        *,
+        *:after,
+        *:before {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            font-family: Helvetica Neue, Helvetica, Arial;
+            font-size: 12px;
+            color: #333;
+            padding: 1em 1em;
+        }
+
+        pre {
+            font: 14px/1.2 Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
+            margin: 0;
+            padding: 0;
+            -moz-tab-size: 2;
+            -o-tab-size: 2;
+            tab-size: 2;
+        }
+
+        pre.prettyprint {
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            padding-left: 10px !important;
+        }
+
+        .gas-costs span.empty {
+            content: "\200b";
+        }
+
+        .gas-costs {
+            text-align: right;
+            min-width: 20px;
+            color: rgba(0, 0, 0, 0.5);
+            background-color: #eaeaea;
+
+        }
+
+        .gas-costs span {
+            display: block;
+            padding: 0 5px;
+            font: 14px/1.2 Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h3>Gas Profiler</h3>
+    <div id='gas-profiler-root'></div>
 
-    <script src="bundle.js"></script>
-
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
 </body>
 
 </html>
