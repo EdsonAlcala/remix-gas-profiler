@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import { buildPcToInstructionMapping, parsedLast, parseRuntimeBinary, parseSourceMap } from "../src/utils"
+import { buildPcToInstructionMapping, parseRuntimeBinary, parseSourceMap } from "../src/utils"
 
 const SOURCEMAP_FILE = "./test/mock-data/source-maps.json"; // TODO Change this
 // TODO: Fix path
@@ -21,11 +21,11 @@ describe('Utils test', () => {
 
             expect(result).toBeTruthy()
 
-            const anotherParseResult = parsedLast(sourceMap)
+            // const anotherParseResult = parsedLast(sourceMap)
 
-            console.log("RESULT anotherParse", JSON.stringify(anotherParseResult))
+            // console.log("RESULT anotherParse", JSON.stringify(anotherParseResult))
 
-            expect(result).toEqual(anotherParseResult)
+            // expect(result).toEqual(anotherParseResult)
         })
     })
 

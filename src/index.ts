@@ -1,19 +1,5 @@
-import Web3 from "web3"
-// import { Collector } from "istanbul";
-import { StructLog } from 'ethereum-types';
-
-import {
-  Api,
-  CompilationResult,
-  createIframeClient,
-  IRemixApi,
-  PluginApi,
-  PluginClient,
-  RemixTx,
-} from '@remixproject/plugin'
-
-
-import { profiler } from "./profiler"
+import { Api, CompilationResult, createIframeClient, IRemixApi, PluginApi, PluginClient, RemixTx } from '@remixproject/plugin'
+import { Profiler } from "./profiler"
 import { constants } from "./constants";
 
 const devMode = { port: 8080 }
@@ -22,8 +8,10 @@ export class GasProfilerPlugin {
   private readonly client: PluginApi<Readonly<IRemixApi>> &
     PluginClient<Api, Readonly<IRemixApi>>
 
+  private readonly profiler: Profiler
   constructor() {
     this.client = createIframeClient({ devMode })
+    this.profiler = new Profiler()
   }
 
   public async init() {
@@ -55,7 +43,15 @@ export class GasProfilerPlugin {
         const traces = provider === 'vm' ? await this.client.call('debugger' as any, 'getTrace', hash) : await this.getTracesViaWeb3(hash);
         console.log('Traces ', JSON.stringify(traces))
 
-        // have traces the StructLog type?
+        // TODOOOOOO
+        // for (let i = 0; i < normalizedStructLogs.length; i++) {
+        //   const structLog = normalizedStructLogs[i];
+        //   if (structLog.depth !== addressStack.length - 1) {
+        //       throw new Error(
+        //           "Malformed trace. Trace depth doesn't match call stack depth"
+        //       );
+        //   }
+
         const compilationResult: CompilationResult = await this.client.solidity.getCompilationResult()
         console.log('Compilation Result', compilationResult)
 
@@ -74,26 +70,9 @@ export class GasProfilerPlugin {
         const bytecode = (compilationResult as any).data.contracts[target][name].evm.bytecode.object
         console.log('bytecode', bytecode)
 
-        const gasPerLineCost = await profiler(sourceMap, bytecode, originalSourceCode, traces);
+        const gasPerLineCost = await this.profiler.getGasPerLineCost(sourceMap, bytecode, originalSourceCode, traces);
 
-        let costsColumn = ''
-        gasPerLineCost.forEach((item) => {
-          const currentCell = item.gasCost > 0 ? `<span class='gas-amount'>${item.gasCost}</span>` : `<span class='empty'>0</span>`
-          costsColumn += currentCell
-        })
-        // console.log(`The result is ${JSON.stringify(result)}`)
-        const htmlContent = `
-        <table><tbody>
-            <tr>
-              <td class="gas-costs">
-                ${costsColumn}
-              </td>
-              <td><pre class="prettyprint lang-js">${originalSourceCode}</pre></td>
-            </tr>
-          </tbody></table>`
-        const root = document.getElementById('gas-profiler-root')
-        root.innerHTML = htmlContent;
-        (window as any).PR.prettyPrint();
+        this.render(originalSourceCode, gasPerLineCost)
 
       } catch (error) {
         console.log("Error in newTransaction event handler", error.message)
@@ -101,8 +80,30 @@ export class GasProfilerPlugin {
     })
   }
 
+  render(originalSourceCode, gasPerLineCost) {
+    let costsColumn = ''
+    gasPerLineCost.forEach((item) => {
+      const currentCell = item.gasCost > 0 ? `<span class='gas-amount'>${item.gasCost}</span>` : `<span class='empty'>0</span>`
+      costsColumn += currentCell
+    })
+    const htmlContent = `
+    <table><tbody>
+        <tr>
+          <td class="gas-costs">
+            ${costsColumn}
+          </td>
+          <td><pre class="prettyprint lang-js">${originalSourceCode}</pre></td>
+        </tr>
+      </tbody></table>`
+
+    const root = document.getElementById('gas-profiler-root')
+    root.innerHTML = htmlContent;
+    (window as any).PR.prettyPrint();
+  }
+
   public async getTracesViaWeb3(transactionHash: string) {
-    //const providerURL = await this.client.network.getEndpoint()
+    // TODO: Until remix issues are fixed I can test
+    // const providerURL = await this.client.network.getEndpoint();
     // console.log('providerURL', providerURL)
     // const endpoint = await this.client.network.getEndpoint()
     // console.log('endpoint', endpoint)
@@ -118,11 +119,11 @@ export class GasProfilerPlugin {
       ]
     });
     try {
-      const traces = await (window as any).web3.traceTx(0x323f3f535965128c7c95a2c853cb8340ba74113210f172d5d17583ddaaa58f4b, { disableStack: true, disableMemory: true, disableStorage: true });
+      const traces = await (window as any).web3.traceTx(transactionHash, { disableStack: true, disableMemory: true, disableStorage: true });
       console.log('Traces via web3', traces)
       return traces;
     } catch (error) {
-      console.log("PROBLEM GETTING TRACES", error)
+      console.log("Problem Getting Traces", error)
     }
 
   }
@@ -131,168 +132,5 @@ export class GasProfilerPlugin {
 new GasProfilerPlugin().init().then(() => {
   console.log('Gas Profiler Plugin loaded!!')
 })
-
-/**
- * Only on creation
- * get byte code
- * remove 0x -> const bytecodeHex = stripHexPrefix(bytecode);
- * get sourceMap
- * const pcToSourceRange = parseSourceMap(
- *  contractData.sourceCodes,
- *  sourceMap,
- *  bytecodeHex,
- *  contractData.sources)
- * 
- * 
- *  */
-
-// for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-//   const singleFileCoverageForTrace = this.profilerHandler(
-//     contractData,
-//     traceInfo.subtrace,
-//     pcToSourceRange,
-//     fileIndex
-//   );
-//   this._collector.add(singleFileCoverageForTrace);
-// }
-export interface ContractData {
-  bytecode: string;
-  sourceMap: string;
-  runtimeBytecode: string;
-  sourceMapRuntime: string;
-  sourceCodes: string[];
-  sources: string[];
-}
-
-export interface Coverage {
-  [fineName: string]: {
-    l?: LineCoverage;
-    f: FunctionCoverage;
-    s: StatementCoverage;
-    b: BranchCoverage;
-    fnMap: FnMap;
-    branchMap: BranchMap;
-    statementMap: StatementMap;
-    path: string;
-  };
-}
-
-export interface LineColumn {
-  line: number;
-  column: number;
-}
-
-export interface SourceRange {
-  location: SingleFileSourceRange;
-  fileName: string;
-}
-
-export interface SingleFileSourceRange {
-  start: LineColumn;
-  end: LineColumn;
-}
-
-export interface LocationByOffset {
-  [offset: number]: LineColumn;
-}
-
-export interface FunctionDescription {
-  name: string;
-  line: number;
-  loc: SingleFileSourceRange;
-  skip?: boolean;
-}
-
-export type StatementDescription = SingleFileSourceRange;
-
-export interface BranchDescription {
-  line: number;
-  type: 'if' | 'switch' | 'cond-expr' | 'binary-expr';
-  locations: SingleFileSourceRange[];
-}
-
-export interface FnMap {
-  [functionId: string]: FunctionDescription;
-}
-
-export interface BranchMap {
-  [branchId: string]: BranchDescription;
-}
-
-export interface StatementMap {
-  [statementId: string]: StatementDescription;
-}
-
-export interface LineCoverage {
-  [lineNo: number]: number;
-}
-
-export interface FunctionCoverage {
-  [functionId: string]: number;
-}
-
-export interface StatementCoverage {
-  [statementId: string]: number;
-}
-
-export interface BranchCoverage {
-  [branchId: string]: number[];
-}
-
-export type Subtrace = StructLog[];
-
-export type SingleFileSubtraceHandler = (
-  contractData: ContractData,
-  subtrace: Subtrace,
-  pcToSourceRange: { [programCounter: number]: SourceRange },
-  fileIndex: number
-) => Coverage;
-
-// export const profilerHandler: SingleFileSubtraceHandler = (
-//   contractData: ContractData,
-//   subtrace: Subtrace,
-//   pcToSourceRange: { [programCounter: number]: SourceRange },
-//   fileIndex: number
-// ): Coverage => {
-//   const absoluteFileName = contractData.sources[fileIndex];
-//   const profilerEntriesDescription = collectCoverageEntries(
-//     contractData.sourceCodes[fileIndex]
-//   );
-//   const gasConsumedByStatement: { [statementId: string]: number } = {};
-//   const statementIds = _.keys(profilerEntriesDescription.statementMap);
-//   for (const statementId of statementIds) {
-//     const statementDescription =
-//       profilerEntriesDescription.statementMap[statementId];
-//     const totalGasCost = _.sum(
-//       _.map(subtrace, structLog => {
-//         const sourceRange = pcToSourceRange[structLog.pc];
-//         if (_.isUndefined(sourceRange)) {
-//           return 0;
-//         }
-//         if (sourceRange.fileName !== absoluteFileName) {
-//           return 0;
-//         }
-//         if (utils.isRangeInside(sourceRange.location, statementDescription)) {
-//           return structLog.gasCost;
-//         } else {
-//           return 0;
-//         }
-//       })
-//     );
-//     gasConsumedByStatement[statementId] = totalGasCost;
-//   }
-//   const partialProfilerOutput = {
-//     [absoluteFileName]: {
-//       ...profilerEntriesDescription,
-//       path: absoluteFileName,
-//       f: {}, // I's meaningless in profiling context
-//       s: gasConsumedByStatement,
-//       b: {} // I's meaningless in profiling context
-//     }
-//   };
-//   return partialProfilerOutput;
-// };
-
-
 
 

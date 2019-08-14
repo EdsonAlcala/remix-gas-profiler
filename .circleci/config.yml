@@ -74,6 +74,9 @@ jobs:
           command: npm run bundle
 
   publish: 
+    branches:
+      only:
+        - master
     docker: *nodejs-docker-image
     steps:
       - checkout

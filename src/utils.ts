@@ -1,35 +1,5 @@
 import { StructLog, OpCode } from "ethereum-types";
 
-// const getLineFromPos = require('get-line-from-pos');
-import { addHexPrefix } from 'ethereumjs-util';
-import { padZeros } from "./address-utils";
-import { BigNumber } from 'bignumber.js';
-
-// export const showAllPointsInSourceMap = (sourceMap, src, lineOffsets) => {
-//     const linePoints = []; //line no -> number of points in source map
-//     sourceMap.forEach(instruction => {
-//         if (instruction.f === -1) {
-//             return;
-//         }
-//         const s = instruction.s;
-//         const line = binarysearch.closest(lineOffsets, s);
-//         if (line === 0) {
-//             console.log('>>>', instruction);
-//         }
-//         if (linePoints[line] === undefined) {
-//             linePoints[line] = 1;
-//         } else {
-//             linePoints[line] += 1;
-//         }
-//     });
-
-//     src.split('\n').forEach((line, i) => {
-//         const points = linePoints[i] || 0;
-//         console.log('%s\t%s\t%s\t\t%s', i, lineOffsets[i], points, line);
-//     });
-
-// }
-
 export const buildLineOffsets = (src: string) => {
   let accu = 0
   return src.split('\n').map(line => {
@@ -41,31 +11,6 @@ export const buildLineOffsets = (src: string) => {
 
 interface IMapping {
   [key: string]: number
-}
-
-export const parsedLast = (srcmap: string) => {
-  return srcmap
-    .split(';')
-    .map(l => l.split(':'))
-    .map(([s, l, f, j]) => ({ s: s === '' ? undefined : s, l, f, j }))
-    .reduce(
-      ([last, ...list], { s, l, f, j }) => [
-        {
-          s: parseInt(s || last.s, 10),
-          l: parseInt(l || last.l, 10),
-          f: parseInt(f || last.f, 10),
-          j: j || last.j,
-        },
-        last,
-        ...list,
-      ],
-      [{} as any],
-    )
-    .reverse()
-    .slice(1)
-  // .map(
-  //     ({ s, l, f, j }: any) => `${srcmaps.sourceList[f]}:${getLineFromPos(source, s)}`
-  // );
 }
 
 const isPush = (instruction: any) => instruction >= 0x60 && instruction < 0x7f // TODO: Improve types
@@ -120,9 +65,9 @@ export const buildPcToInstructionMapping = (codeHexStr: string) => {
   return mapping
 }
 
-export const parseAnotherSourceMap = (sourceMap: string) => {
-  const items = sourceMap.trim().split(';')
-}
+// export const parseAnotherSourceMap = (sourceMap: string) => {
+//   const items = sourceMap.trim().split(';')
+// }
 
 // TODO: test
 export const normalizeStructLogs = (structLogs: StructLog[]): StructLog[] => {
@@ -140,34 +85,21 @@ export const normalizeStructLogs = (structLogs: StructLog[]): StructLog[] => {
 // TODO: test
 export const isCallLike = (op: OpCode): boolean => {
   return [OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall].includes(op)
-
   // return _.includes(
   //   ,
   //   op
   // );
 }
 
-export const getAddressFromStackEntry = (stackEntry: string): string => {
-  const hexBase = 16;
-  return padZeros(
-    new BigNumber(addHexPrefix(stackEntry)).toString(hexBase)
-  );
-}
+// export const getAddressFromStackEntry = (stackEntry: string): string => {
+//   const hexBase = 16;
+//   return padZeros(
+//     new BigNumber(addHexPrefix(stackEntry)).toString(hexBase)
+//   );
+// }
 
 export const isEndOpcode = (op: OpCode): boolean => {
   return [OpCode.Return, OpCode.Stop, OpCode.Revert, OpCode.Invalid, OpCode.SelfDestruct].includes(op)
-}
-
-const scan = (array: [], reducer: any, initialValue: []) => {
-  let accumulator = initialValue
-  const result = []
-
-  for (const currentValue of array) {
-    const curr = reducer(accumulator, currentValue)
-    accumulator = curr
-    result.push(curr)
-  }
-  return result
 }
 
 // https://solidity.readthedocs.io/en/develop/miscellaneous.html#source-mappings
