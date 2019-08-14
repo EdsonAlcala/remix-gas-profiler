@@ -80,7 +80,7 @@ jobs:
       - *restore_cache
       - run:
           name: Publish
-          command: surge --project ./dist --domain remix-gas-profiler.surge.sh
+          command: npm run publish
 
 workflows:
   version: 2
