@@ -43,7 +43,7 @@ export class Profiler {
 
       console.log('bottomDepth', bottomDepth)
 
-      for (let i = 0; i < normalisedStructLogs.length;) {
+      for (let i = 0; i < normalisedStructLogs.length; ) {
         const { gas, gasCost, op, pc } = normalisedStructLogs[i]
         console.log('gas', gas)
         console.log('gasCost', gasCost)
