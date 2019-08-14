@@ -104,6 +104,3 @@ workflows:
       - publish:
           requires:
             - bundle
-          branches:
-            only:
-              - master
