@@ -27,11 +27,11 @@ export class GasProfilerPlugin {
 
     await this.client.onload()
 
-    this.client.on('udapp', 'newTransaction', async (tx: RemixTx) => {
+    this.client.on('udapp', 'newTransaction', async (transaction: RemixTx) => {
       try {
-        console.log('A new transaction was sent', tx)
+        console.log('A new transaction was sent', transaction)
 
-        const { hash } = tx as any
+        const { hash } = transaction as any
         console.log('Transaction hash', hash)
 
         this.setStatusToLoading(hash);
@@ -84,7 +84,7 @@ export class GasProfilerPlugin {
           traces,
         )
 
-        this.render(originalSourceCode, gasPerLineCost)
+        this.render(originalSourceCode, gasPerLineCost, transaction)
         this.setStatusToSuccess(hash);
 
       } catch (error) {
@@ -101,36 +101,65 @@ export class GasProfilerPlugin {
     this.client.emit('statusChanged', { key: 'succeed', type: 'success', title: `New profiling for tx ${transactionHash} is ready` })
   }
 
-  // interface Status {
-  //   key: number | 'edited' | 'succeed' | 'loading' | 'failed' | 'none'  // Display an icon or number
-  //   type?: 'success' | 'info' | 'warning' | 'error'  // Bootstrap css color
-  //   title?: string  // Describe the status on mouseover
-  // }
+  private render(originalSourceCode, gasPerLineCost, transaction) {
 
-  private render(originalSourceCode, gasPerLineCost) {
-    let costsColumn = ''
-    gasPerLineCost.forEach(item => {
-      const currentCell =
-        item.gasCost > 0
-          ? `<span class='gas-amount'>${item.gasCost}</span>`
-          : `<span class='empty'>0</span>`
-      costsColumn += currentCell
-    })
+    const getCostsColumn = (gasPerLineCost) => {
+      let result = ''
+      gasPerLineCost.forEach(item => {
+        const currentCell =
+          item.gasCost > 0
+            ? `<span class='gas-amount'>${item.gasCost}</span>`
+            : `<span class='empty'>0</span>`
+        result += currentCell
+      })
+      return result
+    }
 
-    const htmlContent = `
-    <table><tbody>
+    const getCodeWithGasCosts = (costsColumn, originalSourceCode) => (`
+      <table><tbody>
         <tr>
           <td class="gas-costs">
             ${costsColumn}
           </td>
           <td><pre class="prettyprint lang-js">${originalSourceCode}</pre></td>
         </tr>
-      </tbody></table>`
+      </tbody></table>
+      `
+    )
+
+    const costsColumn = getCostsColumn(gasPerLineCost)
+    const codeWithGasCosts = getCodeWithGasCosts(costsColumn, originalSourceCode)
+
+    const transactionHeader = ({ hash, transactionCost, executionCost, contractAddress }) => `
+        <li class="list-group-item d-flex align-items-center">
+          Transaction hash <span class="badge badge-light">${hash}</span>
+        </li>
+        <li class="list-group-item d-flex align-items-center">
+          Contract address <span class="badge badge-light">${contractAddress}</span>
+        </li>
+        <li class="list-group-item d-flex align-items-center">
+          Transaction Costs <span class="badge badge-light">${transactionCost}</span>
+        </li>
+        <li class="list-group-item d-flex align-items-center">
+          Execution Costs <span class="badge badge-light">${executionCost}</span>
+        </li>
+    `
+
+    const htmlContent = `
+      <ul class="list-group">
+        ${transactionHeader(transaction)}
+        <li class="code-content list-group-item d-flex">
+          ${codeWithGasCosts}
+        </li>
+      </ul>
+    `
 
     const root = document.getElementById('gas-profiler-root')
     root.innerHTML = htmlContent
       ; (window as any).PR.prettyPrint()
   }
+
+
 }
 
 new GasProfilerPlugin().init().then(() => {
