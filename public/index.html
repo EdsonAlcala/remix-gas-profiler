@@ -72,12 +72,56 @@
         #gas-profiler-root .code-content.list-group-item.d-flex {
             padding: 0;
         }
+
+        #gas-profiler-root .card-footer.custom.text-center {
+            background-color: transparent;
+            border: none;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        #gas-profiler-root .card-body {
+            padding-top: 0.75rem;
+        }
     </style>
 </head>
 
 <body>
 
-    <div id='gas-profiler-root'></div>
+    <div id='gas-profiler-root'>
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Description</h6>
+                <p class="card-text">Profile gas costs for every transaction you execute</p>
+
+                <h6 class="card-title">How to use?</h6>
+                <p class="card-text">Simply execute a transaction and open the profiler</p>
+
+                <h6 class="card-title">Limitations</h6>
+                <ul>
+                    <li>Tested only with single contracts</li>
+                    <li>Gas cost calculation still not 100 % accurate</li>
+                </ul>
+
+                <h6 class="card-title">Links</h6>
+                <div class="card-title">
+                    <a target="_parent" href="https://github.com/EdsonAlcala/remix-gas-profiler/issues"
+                        class="card-link">Issues / bug
+                        tracker</a>
+                    <a target="_parent" href="https://github.com/EdsonAlcala/remix-gas-profiler"
+                        class="card-link">Repository</a>
+                </div>
+
+                <h6 class="card-title">Contact author</h6>
+                <a target="_blank" href="mailto:edson_alcala@msn.com" class="card-link">edson_alcala@msn.com</a>
+            </div>
+            <div class="card-footer custom text-center">
+                <div class="alert alert-danger" role="alert">
+                    WARNING: Debugger plugin is required
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
