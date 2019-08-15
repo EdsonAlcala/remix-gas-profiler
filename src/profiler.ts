@@ -12,39 +12,30 @@ interface ISourceMap {
 }
 
 export class Profiler {
-  public async getGasPerLineCost(
-    sourceMap: string,
-    bytecode: string,
-    originalSourceCode: string,
-    trace: any,
-  ) {
-    try {
-      console.log('sourceMap', sourceMap)
-      console.log('bytecode', bytecode)
-      console.log('originalSourceCode', originalSourceCode)
 
+  public async getGasPerLineCost(sourceMap: string, bytecode: string, sourceCode: string, trace: any) {
+    try {
       const sourceMapParsed = parseSourceMap(sourceMap)
-      console.log('sourceMapParsed', sourceMapParsed)
 
       const pcToIdx = buildPcToInstructionMapping(bytecode)
       console.log('pcToIdx !!!', pcToIdx)
 
-      const lineOffsets = buildLineOffsets(originalSourceCode) // To Know the lenght per line
+      const lineOffsets = buildLineOffsets(sourceCode) // To Know the lenght per line
       console.log('lineOffsets', lineOffsets)
 
       const lineGas: any[] = []
 
       let synthCost = 0
 
-      // console.log('trace', trace)
       const structLogs = trace.result ? trace.result.structLogs : trace.structLogs
       const normalisedStructLogs = normalizeStructLogs(structLogs)
       const bottomDepth = normalisedStructLogs[0].depth // should be 1
 
       console.log('bottomDepth', bottomDepth)
 
-      for (let i = 0; i < normalisedStructLogs.length; ) {
+      for (let i = 0; i < normalisedStructLogs.length;) {
         const { gas, gasCost, op, pc } = normalisedStructLogs[i]
+
         console.log('gas', gas)
         console.log('gasCost', gasCost)
         console.log('op', op)
@@ -89,7 +80,8 @@ export class Profiler {
       }
 
       const gasPerLineCost = []
-      originalSourceCode.split('\n').forEach((line, i) => {
+
+      sourceCode.split('\n').forEach((line, i) => {
         const gas = lineGas[i] || 0
         console.log('%s\t\t%s', gas, line, i)
         gasPerLineCost.push({
