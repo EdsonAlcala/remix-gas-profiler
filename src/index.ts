@@ -16,6 +16,7 @@ export class GasProfilerPlugin {
     PluginClient<Api, Readonly<IRemixApi>>
 
   private readonly profiler: Profiler
+
   constructor() {
     this.client = createIframeClient({ devMode })
     this.profiler = new Profiler()
@@ -32,6 +33,8 @@ export class GasProfilerPlugin {
 
         const { hash } = tx as any
         console.log('Transaction hash', hash)
+
+        this.setStatusToLoading(hash);
 
         const traces = await this.client.call('debugger' as any, 'getTrace', hash)
         console.log('Traces ', traces)
@@ -82,11 +85,27 @@ export class GasProfilerPlugin {
         )
 
         this.render(originalSourceCode, gasPerLineCost)
+        this.setStatusToSuccess(hash);
+
       } catch (error) {
         console.log('Error in newTransaction event handler', error.message)
       }
     })
   }
+
+  private setStatusToLoading(transactionHash: string) {
+    this.client.emit('statusChanged', { key: 'loading', type: 'info', title: `Profiling for tx ${transactionHash} in progress` })
+  }
+
+  private setStatusToSuccess(transactionHash: string) {
+    this.client.emit('statusChanged', { key: 'succeed', type: 'success', title: `New profiling for tx ${transactionHash} is ready` })
+  }
+
+  // interface Status {
+  //   key: number | 'edited' | 'succeed' | 'loading' | 'failed' | 'none'  // Display an icon or number
+  //   type?: 'success' | 'info' | 'warning' | 'error'  // Bootstrap css color
+  //   title?: string  // Describe the status on mouseover
+  // }
 
   private render(originalSourceCode, gasPerLineCost) {
     let costsColumn = ''
@@ -110,7 +129,7 @@ export class GasProfilerPlugin {
 
     const root = document.getElementById('gas-profiler-root')
     root.innerHTML = htmlContent
-    ;(window as any).PR.prettyPrint()
+      ; (window as any).PR.prettyPrint()
   }
 }
 
