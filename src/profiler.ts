@@ -12,8 +12,12 @@ interface ISourceMap {
 }
 
 export class Profiler {
-
-  public async getGasPerLineCost(sourceMap: string, bytecode: string, sourceCode: string, trace: any) {
+  public async getGasPerLineCost(
+    sourceMap: string,
+    bytecode: string,
+    sourceCode: string,
+    trace: any,
+  ) {
     try {
       const sourceMapParsed = parseSourceMap(sourceMap)
 
@@ -33,7 +37,7 @@ export class Profiler {
 
       console.log('bottomDepth', bottomDepth)
 
-      for (let i = 0; i < normalisedStructLogs.length;) {
+      for (let i = 0; i < normalisedStructLogs.length; ) {
         const { gas, gasCost, op, pc } = normalisedStructLogs[i]
 
         console.log('gas', gas)

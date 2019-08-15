@@ -42,7 +42,8 @@ export class GasProfilerPlugin {
         const target = (compilationResult as any).source.target
         console.log('target', target)
 
-        const originalSourceCode = (compilationResult as any).source.sources[target].content
+        const originalSourceCode = (compilationResult as any).source.sources[target]
+          .content
         console.log('originalSourceCode', originalSourceCode)
 
         const name = target
@@ -65,10 +66,12 @@ export class GasProfilerPlugin {
         //         "state()": "410"
         //     }
         // }
-        const sourceMap = (compilationResult as any).data.contracts[target][name].evm.bytecode.sourceMap
+        const sourceMap = (compilationResult as any).data.contracts[target][name].evm
+          .bytecode.sourceMap
         console.log('sourceMap', sourceMap)
 
-        const bytecode = (compilationResult as any).data.contracts[target][name].evm.bytecode.object
+        const bytecode = (compilationResult as any).data.contracts[target][name].evm
+          .bytecode.object
         console.log('bytecode', bytecode)
 
         const gasPerLineCost = await this.profiler.getGasPerLineCost(
@@ -79,7 +82,6 @@ export class GasProfilerPlugin {
         )
 
         this.render(originalSourceCode, gasPerLineCost)
-
       } catch (error) {
         console.log('Error in newTransaction event handler', error.message)
       }
@@ -107,8 +109,8 @@ export class GasProfilerPlugin {
       </tbody></table>`
 
     const root = document.getElementById('gas-profiler-root')
-    root.innerHTML = htmlContent;
-    (window as any).PR.prettyPrint()
+    root.innerHTML = htmlContent
+    ;(window as any).PR.prettyPrint()
   }
 }
 
