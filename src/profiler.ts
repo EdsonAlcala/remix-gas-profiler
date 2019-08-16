@@ -35,7 +35,7 @@ export class Profiler {
 
       console.log('bottomDepth', bottomDepth)
 
-      for (let i = 0; i < normalisedStructLogs.length;) {
+      for (let i = 0; i < normalisedStructLogs.length; ) {
         const { gas, gasCost, op, pc } = normalisedStructLogs[i]
 
         let cost
@@ -78,7 +78,6 @@ export class Profiler {
       })
 
       return gasPerLineCost
-
     } catch (error) {
       console.log('ERROR', error)
     }

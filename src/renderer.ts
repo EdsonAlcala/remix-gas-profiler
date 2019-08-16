@@ -1,16 +1,16 @@
-export const getCostsColumn = (gasPerLineCost) => {
-    let result = ''
-    gasPerLineCost.forEach(item => {
-        const currentCell =
-            item.gasCost > 0
-                ? `<span class='gas-amount'>${item.gasCost}</span>`
-                : `<span class='empty'>0</span>`
-        result += currentCell
-    })
-    return result
+export const getCostsColumn = gasPerLineCost => {
+  let result = ''
+  gasPerLineCost.forEach(item => {
+    const currentCell =
+      item.gasCost > 0
+        ? `<span class='gas-amount'>${item.gasCost}</span>`
+        : `<span class='empty'>0</span>`
+    result += currentCell
+  })
+  return result
 }
 
-export const getCodeWithGasCosts = (costsColumn, originalSourceCode) => (`
+export const getCodeWithGasCosts = (costsColumn, originalSourceCode) => `
 <table><tbody>
   <tr>
     <td class="gas-costs">
@@ -22,9 +22,13 @@ export const getCodeWithGasCosts = (costsColumn, originalSourceCode) => (`
   </tr>
 </tbody></table>
 `
-)
 
-export const transactionHeader = ({ hash, transactionCost, executionCost, contractAddress }) => `
+export const transactionHeader = ({
+  hash,
+  transactionCost,
+  executionCost,
+  contractAddress,
+}) => `
         <li class="custom list-group-item d-print-flex">
           <h6>Transaction hash</h6>
           <p class="badge badge-light">${hash}</p>

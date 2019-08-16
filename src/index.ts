@@ -8,7 +8,7 @@ import {
   RemixTx,
 } from '@remixproject/plugin'
 import { Profiler } from './profiler'
-import { getCostsColumn, getCodeWithGasCosts, transactionHeader } from './renderer';
+import { getCodeWithGasCosts, getCostsColumn, transactionHeader } from './renderer'
 
 const devMode = { port: 8080 }
 
@@ -35,7 +35,7 @@ export class GasProfilerPlugin {
         const { hash } = transaction as any
         console.log('Transaction hash', hash)
 
-        this.setStatusToLoading(hash);
+        this.setStatusToLoading(hash)
 
         const traces = await this.client.call('debugger' as any, 'getTrace', hash)
         console.log('Traces ', traces)
@@ -47,13 +47,15 @@ export class GasProfilerPlugin {
         const contractSourceKeys = Object.keys(contracts)
         const contractSourceKey = contractSourceKeys[0]
 
-        const originalSourceCode = (compilationResult as any).source.sources[contractSourceKey].content.trim();
+        const originalSourceCode = (compilationResult as any).source.sources[
+          contractSourceKey
+        ].content.trim()
         console.log('originalSourceCode', originalSourceCode)
 
         const contractKeys = Object.keys(contracts[contractSourceKey])
         console.log('contractKeys', contractKeys)
 
-        contractKeys.forEach(async (element) => {
+        contractKeys.forEach(async element => {
           const sourceMap = contracts[contractSourceKey][element].evm.bytecode.sourceMap
           console.log('sourceMap', sourceMap)
 
@@ -68,9 +70,8 @@ export class GasProfilerPlugin {
           )
 
           this.render(originalSourceCode, gasPerLineCost, transaction)
-          this.setStatusToSuccess(hash);
+          this.setStatusToSuccess(hash)
         })
-
       } catch (error) {
         console.log('Error in newTransaction event handler', error.message)
       }
@@ -78,15 +79,22 @@ export class GasProfilerPlugin {
   }
 
   private setStatusToLoading(transactionHash: string) {
-    this.client.emit('statusChanged', { key: 'loading', type: 'info', title: `Profiling for tx ${transactionHash} in progress` })
+    this.client.emit('statusChanged', {
+      key: 'loading',
+      type: 'info',
+      title: `Profiling for tx ${transactionHash} in progress`,
+    })
   }
 
   private setStatusToSuccess(transactionHash: string) {
-    this.client.emit('statusChanged', { key: 'succeed', type: 'success', title: `New profiling for tx ${transactionHash} is ready` })
+    this.client.emit('statusChanged', {
+      key: 'succeed',
+      type: 'success',
+      title: `New profiling for tx ${transactionHash} is ready`,
+    })
   }
 
   private render(originalSourceCode, gasPerLineCost, transaction) {
-
     const costsColumn = getCostsColumn(gasPerLineCost)
     const codeWithGasCosts = getCodeWithGasCosts(costsColumn, originalSourceCode)
 
@@ -101,10 +109,8 @@ export class GasProfilerPlugin {
 
     const root = document.getElementById('gas-profiler-root')
     root.innerHTML = htmlContent
-      ; (window as any).PR.prettyPrint()
+    ;(window as any).PR.prettyPrint()
   }
-
-
 }
 
 new GasProfilerPlugin().init().then(() => {
