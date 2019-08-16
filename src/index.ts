@@ -109,7 +109,7 @@ export class GasProfilerPlugin {
         const currentCell =
           item.gasCost > 0
             ? `<span class='gas-amount'>${item.gasCost}</span>`
-            : `<span class='empty'>0</span>`
+            : `<span class='empty'>---</span>`
         result += currentCell
       })
       return result
@@ -131,17 +131,15 @@ export class GasProfilerPlugin {
     const codeWithGasCosts = getCodeWithGasCosts(costsColumn, originalSourceCode)
 
     const transactionHeader = ({ hash, transactionCost, executionCost, contractAddress }) => `
-        <li class="list-group-item d-flex align-items-center">
-          Transaction hash <span class="badge badge-light">${hash}</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center">
-          Contract address <span class="badge badge-light">${contractAddress}</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center">
-          Transaction Costs <span class="badge badge-light">${transactionCost}</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center">
-          Execution Costs <span class="badge badge-light">${executionCost}</span>
+        <li class="custom list-group-item d-print-flex">
+          <h6>Transaction hash</h6>
+          <p class="badge badge-light">${hash}</p>
+          <h6> Contract address </h6>
+          <p class="badge badge-light">${contractAddress}</p>
+          <h6>Transaction cost</h6>
+          <p class="badge badge-light">${transactionCost}</p>
+          <h6>Execution cost</h6>
+          <p class="badge badge-light">${executionCost}</p>
         </li>
     `
 
