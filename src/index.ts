@@ -8,6 +8,7 @@ import {
   RemixTx,
 } from '@remixproject/plugin'
 import { Profiler } from './profiler'
+import { getCodeWithGasCosts, getCostsColumn, transactionHeader } from './renderer'
 
 const devMode = { port: 8080 }
 
@@ -16,6 +17,7 @@ export class GasProfilerPlugin {
     PluginClient<Api, Readonly<IRemixApi>>
 
   private readonly profiler: Profiler
+
   constructor() {
     this.client = createIframeClient({ devMode })
     this.profiler = new Profiler()
@@ -26,12 +28,14 @@ export class GasProfilerPlugin {
 
     await this.client.onload()
 
-    this.client.on('udapp', 'newTransaction', async (tx: RemixTx) => {
+    this.client.on('udapp', 'newTransaction', async (transaction: RemixTx) => {
       try {
-        console.log('A new transaction was sent', tx)
+        console.log('A new transaction was sent', transaction)
 
-        const { hash } = tx as any
+        const { hash } = transaction as any
         console.log('Transaction hash', hash)
+
+        this.setStatusToLoading(hash)
 
         const traces = await this.client.call('debugger' as any, 'getTrace', hash)
         console.log('Traces ', traces)
@@ -39,74 +43,69 @@ export class GasProfilerPlugin {
         const compilationResult: CompilationResult = await this.client.solidity.getCompilationResult()
         console.log('Compilation Result', compilationResult)
 
-        const target = (compilationResult as any).source.target
-        console.log('target', target)
+        const contracts = (compilationResult as any).data.contracts
+        const contractSourceKeys = Object.keys(contracts)
+        const contractSourceKey = contractSourceKeys[0]
 
-        const originalSourceCode = (compilationResult as any).source.sources[target]
-          .content
+        const originalSourceCode = (compilationResult as any).source.sources[
+          contractSourceKey
+        ].content.trim()
         console.log('originalSourceCode', originalSourceCode)
 
-        const name = target
-          .replace('browser/', '')
-          .replace('.sol', '')
-          .trim()
-        console.log('name', name)
+        const contractKeys = Object.keys(contracts[contractSourceKey])
+        console.log('contractKeys', contractKeys)
 
-        // const gasEstimates = (compilationResult as any).data.contracts[target][name].evm.bytecode.gasEstimates
-        // console.log('gasEstimates', gasEstimates)
-        // Gas Estimates
-        // {
-        //     "Creation": {
-        //         "codeDepositCost": "39800",
-        //         "executionCost": "20107",
-        //         "totalCost": "59907"
-        //     },
-        //     "External": {
-        //         "getState()": "396",
-        //         "state()": "410"
-        //     }
-        // }
-        const sourceMap = (compilationResult as any).data.contracts[target][name].evm
-          .bytecode.sourceMap
-        console.log('sourceMap', sourceMap)
+        contractKeys.forEach(async element => {
+          const sourceMap = contracts[contractSourceKey][element].evm.bytecode.sourceMap
+          console.log('sourceMap', sourceMap)
 
-        const bytecode = (compilationResult as any).data.contracts[target][name].evm
-          .bytecode.object
-        console.log('bytecode', bytecode)
+          const bytecode = contracts[contractSourceKey][element].evm.bytecode.object
+          console.log('bytecode', bytecode)
 
-        const gasPerLineCost = await this.profiler.getGasPerLineCost(
-          sourceMap,
-          bytecode,
-          originalSourceCode,
-          traces,
-        )
+          const gasPerLineCost = await this.profiler.getGasPerLineCost(
+            sourceMap,
+            bytecode,
+            originalSourceCode,
+            traces,
+          )
 
-        this.render(originalSourceCode, gasPerLineCost)
+          this.render(originalSourceCode, gasPerLineCost, transaction)
+          this.setStatusToSuccess(hash)
+        })
       } catch (error) {
         console.log('Error in newTransaction event handler', error.message)
       }
     })
   }
 
-  private render(originalSourceCode, gasPerLineCost) {
-    let costsColumn = ''
-    gasPerLineCost.forEach(item => {
-      const currentCell =
-        item.gasCost > 0
-          ? `<span class='gas-amount'>${item.gasCost}</span>`
-          : `<span class='empty'>0</span>`
-      costsColumn += currentCell
+  private setStatusToLoading(transactionHash: string) {
+    this.client.emit('statusChanged', {
+      key: 'loading',
+      type: 'info',
+      title: `Profiling for tx ${transactionHash} in progress`,
     })
+  }
+
+  private setStatusToSuccess(transactionHash: string) {
+    this.client.emit('statusChanged', {
+      key: 'succeed',
+      type: 'success',
+      title: `New profiling for tx ${transactionHash} is ready`,
+    })
+  }
+
+  private render(originalSourceCode, gasPerLineCost, transaction) {
+    const costsColumn = getCostsColumn(gasPerLineCost)
+    const codeWithGasCosts = getCodeWithGasCosts(costsColumn, originalSourceCode)
 
     const htmlContent = `
-    <table><tbody>
-        <tr>
-          <td class="gas-costs">
-            ${costsColumn}
-          </td>
-          <td><pre class="prettyprint lang-js">${originalSourceCode}</pre></td>
-        </tr>
-      </tbody></table>`
+      <ul class="list-group">
+        ${transactionHeader(transaction)}
+        <li class="code-content list-group-item d-flex">
+          ${codeWithGasCosts}
+        </li>
+      </ul>
+    `
 
     const root = document.getElementById('gas-profiler-root')
     root.innerHTML = htmlContent
