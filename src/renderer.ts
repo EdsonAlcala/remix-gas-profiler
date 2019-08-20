@@ -28,7 +28,7 @@ export const transactionHeader = ({
   transactionCost,
   executionCost,
   contractAddress,
-  to
+  to,
 }) => `
         <li class="custom list-group-item d-print-flex">
           <h6>Transaction hash</h6>
