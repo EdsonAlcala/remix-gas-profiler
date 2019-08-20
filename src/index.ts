@@ -58,13 +58,16 @@ export class GasProfilerPlugin {
         console.log('contractKeys', contractKeys)
 
         contractKeys.forEach(async element => {
-
           const currentContractEVMData = contracts[contractSourceKey][element].evm
 
-          const sourceMap = isContractCreation ? currentContractEVMData.bytecode.sourceMap : currentContractEVMData.deployedBytecode.sourceMap
+          const sourceMap = isContractCreation
+            ? currentContractEVMData.bytecode.sourceMap
+            : currentContractEVMData.deployedBytecode.sourceMap
           console.log('sourceMap', sourceMap)
 
-          const bytecode = isContractCreation ? currentContractEVMData.bytecode.object : currentContractEVMData.deployedBytecode.object
+          const bytecode = isContractCreation
+            ? currentContractEVMData.bytecode.object
+            : currentContractEVMData.deployedBytecode.object
           console.log('bytecode', bytecode)
 
           const gasPerLineCost = await this.profiler.getGasPerLineCost(
@@ -114,7 +117,7 @@ export class GasProfilerPlugin {
 
     const root = document.getElementById('gas-profiler-root')
     root.innerHTML = htmlContent
-      ; (window as any).PR.prettyPrint()
+    ;(window as any).PR.prettyPrint()
   }
 }
 
