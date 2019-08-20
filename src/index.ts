@@ -35,6 +35,8 @@ export class GasProfilerPlugin {
         const { hash } = transaction as any
         console.log('Transaction hash', hash)
 
+        const isContractCreation = (transaction as any).contractAddress ? true : false
+
         this.setStatusToLoading(hash)
 
         const traces = await this.client.call('debugger' as any, 'getTrace', hash)
@@ -56,10 +58,16 @@ export class GasProfilerPlugin {
         console.log('contractKeys', contractKeys)
 
         contractKeys.forEach(async element => {
-          const sourceMap = contracts[contractSourceKey][element].evm.bytecode.sourceMap
+          const currentContractEVMData = contracts[contractSourceKey][element].evm
+
+          const sourceMap = isContractCreation
+            ? currentContractEVMData.bytecode.sourceMap
+            : currentContractEVMData.deployedBytecode.sourceMap
           console.log('sourceMap', sourceMap)
 
-          const bytecode = contracts[contractSourceKey][element].evm.bytecode.object
+          const bytecode = isContractCreation
+            ? currentContractEVMData.bytecode.object
+            : currentContractEVMData.deployedBytecode.object
           console.log('bytecode', bytecode)
 
           const gasPerLineCost = await this.profiler.getGasPerLineCost(
