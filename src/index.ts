@@ -47,12 +47,14 @@ export class GasProfilerPlugin {
 
         const contracts = (compilationResult as any).data.contracts
 
-        for (let file in contracts) {
-          for (let contract in contracts[file]) {
-            const originalSourceCode = (compilationResult as any).source.sources[file].content.trim()
+        for (const file of Object.keys(contracts)) {
+          for (const contract of Object.keys(contracts[file])) {
+            const originalSourceCode = (compilationResult as any).source.sources[
+              file
+            ].content.trim()
             console.log('originalSourceCode', originalSourceCode)
 
-            const currentContractEVMData = (contracts[file][contract]).evm
+            const currentContractEVMData = contracts[file][contract].evm
             console.log('currentContractEVMData', currentContractEVMData)
 
             const sourceMap = isContractCreation
@@ -113,7 +115,7 @@ export class GasProfilerPlugin {
 
     const root = document.getElementById('gas-profiler-root')
     root.innerHTML = htmlContent
-      ; (window as any).PR.prettyPrint()
+    ;(window as any).PR.prettyPrint()
   }
 }
 
