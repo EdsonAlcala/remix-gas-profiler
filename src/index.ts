@@ -46,40 +46,38 @@ export class GasProfilerPlugin {
         console.log('Compilation Result', compilationResult)
 
         const contracts = (compilationResult as any).data.contracts
-        const contractSourceKeys = Object.keys(contracts)
-        const contractSourceKey = contractSourceKeys[0]
 
-        const originalSourceCode = (compilationResult as any).source.sources[
-          contractSourceKey
-        ].content.trim()
-        console.log('originalSourceCode', originalSourceCode)
+        for (const file of Object.keys(contracts)) {
+          for (const contract of Object.keys(contracts[file])) {
+            const originalSourceCode = (compilationResult as any).source.sources[
+              file
+            ].content.trim()
+            console.log('originalSourceCode', originalSourceCode)
 
-        const contractKeys = Object.keys(contracts[contractSourceKey])
-        console.log('contractKeys', contractKeys)
+            const currentContractEVMData = contracts[file][contract].evm
+            console.log('currentContractEVMData', currentContractEVMData)
 
-        contractKeys.forEach(async element => {
-          const currentContractEVMData = contracts[contractSourceKey][element].evm
+            const sourceMap = isContractCreation
+              ? currentContractEVMData.bytecode.sourceMap
+              : currentContractEVMData.deployedBytecode.sourceMap
+            console.log('sourceMap', sourceMap)
 
-          const sourceMap = isContractCreation
-            ? currentContractEVMData.bytecode.sourceMap
-            : currentContractEVMData.deployedBytecode.sourceMap
-          console.log('sourceMap', sourceMap)
+            const bytecode = isContractCreation
+              ? currentContractEVMData.bytecode.object
+              : currentContractEVMData.deployedBytecode.object
+            console.log('bytecode', bytecode)
 
-          const bytecode = isContractCreation
-            ? currentContractEVMData.bytecode.object
-            : currentContractEVMData.deployedBytecode.object
-          console.log('bytecode', bytecode)
+            const gasPerLineCost = await this.profiler.getGasPerLineCost(
+              sourceMap,
+              bytecode,
+              originalSourceCode,
+              traces,
+            )
 
-          const gasPerLineCost = await this.profiler.getGasPerLineCost(
-            sourceMap,
-            bytecode,
-            originalSourceCode,
-            traces,
-          )
-
-          this.render(originalSourceCode, gasPerLineCost, transaction)
-          this.setStatusToSuccess(hash)
-        })
+            this.render(originalSourceCode, gasPerLineCost, transaction)
+            this.setStatusToSuccess(hash)
+          }
+        }
       } catch (error) {
         console.log('Error in newTransaction event handler', error.message)
       }
