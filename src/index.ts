@@ -80,7 +80,16 @@ export class GasProfilerPlugin {
         }
       } catch (error) {
         console.log('Error in newTransaction event handler', error.message)
+        this.setStatusToError()
       }
+    })
+  }
+
+  private setStatusToError() {
+    this.client.emit('statusChanged', {
+      key: 'loading',
+      type: 'error',
+      title: `Profiling failed`,
     })
   }
 
@@ -115,7 +124,7 @@ export class GasProfilerPlugin {
 
     const root = document.getElementById('gas-profiler-root')
     root.innerHTML = htmlContent
-    ;(window as any).PR.prettyPrint()
+      ; (window as any).PR.prettyPrint()
   }
 }
 

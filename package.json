@@ -34,7 +34,7 @@
     "webpack-dev-server": "^3.7.2"
   },
   "dependencies": {
-    "@remixproject/plugin": "^0.1.9",
+    "@remixproject/plugin": "^0.1.16",
     "binarysearch": "^1.0.0",
     "ethereum-types": "^2.1.4"
   }
