@@ -87,7 +87,7 @@ export class GasProfilerPlugin {
 
   private setStatusToError() {
     this.client.emit('statusChanged', {
-      key: 'loading',
+      key: 'failed',
       type: 'error',
       title: `Profiling failed`,
     })
