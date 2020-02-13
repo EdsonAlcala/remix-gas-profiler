@@ -1,6 +1,6 @@
 # Gas Profiler Remix-Plugin
 
-[![CircleCI](https://circleci.com/gh/EdsonAlcala/remix-gas-profiler.svg?style=svg)](https://circleci.com/gh/EdsonAlcala/remix-gas-profiler) [![Coverage Status](https://coveralls.io/repos/github/EdsonAlcala/remix-gas-profiler/badge.svg?branch=master)](https://coveralls.io/github/EdsonAlcala/remix-gas-profiler?branch=master)
+[![CircleCI](https://circleci.com/gh/Machinalabs/remix-gas-profiler.svg?style=svg)](https://circleci.com/gh/Machinalabs/remix-gas-profiler) [![Coverage Status](https://coveralls.io/repos/github/Machinalabs/remix-gas-profiler/badge.svg?branch=master)](https://coveralls.io/github/Machinalabs/remix-gas-profiler?branch=master)
 
 ### Install
 
