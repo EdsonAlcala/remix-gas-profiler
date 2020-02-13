@@ -102,5 +102,6 @@ workflows:
             - unit-tests
             - npm-audit
       - publish:
+          context: SolidStudio
           requires:
             - bundle
