@@ -1,5 +1,7 @@
 # Gas Profiler Remix-Plugin
 
+:warning: WARNING: The newest version is located at https://github.com/Machinalabs/remix-gas-profiler-v2
+
 [![CircleCI](https://circleci.com/gh/EdsonAlcala/remix-gas-profiler.svg?style=svg)](https://circleci.com/gh/EdsonAlcala/remix-gas-profiler) [![Coverage Status](https://coveralls.io/repos/github/EdsonAlcala/remix-gas-profiler/badge.svg?branch=master)](https://coveralls.io/github/EdsonAlcala/remix-gas-profiler?branch=master)
 
 ### Install
